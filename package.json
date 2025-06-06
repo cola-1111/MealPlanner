@@ -1,0 +1,27 @@
+{
+  "name": "low-fat-high-protein-meal-planner",
+  "version": "1.0.0",
+  "description": "MCP server for suggesting low-fat, high-protein meals",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch",
+    "lint": "eslint src/**/*.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"
+  },
+  "keywords": ["mcp", "meal-planner", "nutrition", "health"],
+  "author": "",
+  "license": "MIT"
+}
