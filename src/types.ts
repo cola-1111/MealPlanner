@@ -69,3 +69,74 @@ export interface MealPlan {
     avgDailyCarbs: number;
   };
 }
+
+export interface RegisteredMenu {
+  id: string;
+  name: string;
+  description: string;
+  ingredients: string[];
+  instructions: string[];
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  nutrition: {
+    calories: number;
+    protein: number;
+    fat: number;
+    carbohydrates: number;
+    fiber: number;
+    sodium: number;
+  };
+  prepTime: number;
+  servings: number;
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface MenuRegistrationRequest {
+  name: string;
+  description: string;
+  ingredients: string[];
+  instructions: string[];
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  nutrition: {
+    calories: number;
+    protein: number;
+    fat: number;
+    carbohydrates: number;
+    fiber: number;
+    sodium: number;
+  };
+  prepTime: number;
+  servings: number;
+  tags?: string[];
+}
+
+export interface MenuUpdateRequest {
+  id: string;
+  name?: string;
+  description?: string;
+  ingredients?: string[];
+  instructions?: string[];
+  mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  nutrition?: {
+    calories: number;
+    protein: number;
+    fat: number;
+    carbohydrates: number;
+    fiber: number;
+    sodium: number;
+  };
+  prepTime?: number;
+  servings?: number;
+  tags?: string[];
+}
+
+export interface MenuSuggestionOptions {
+  mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  maxCalories?: number;
+  minProtein?: number;
+  maxFat?: number;
+  tags?: string[];
+  excludeMenuIds?: string[];
+  vegetarian?: boolean;
+}

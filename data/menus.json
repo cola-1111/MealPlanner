@@ -1,0 +1,68 @@
+[
+  {
+    "id": "menu_1749829018357_1k6kl4a7p",
+    "name": "高タンパク質オートミール",
+    "description": "バナナとプロテインパウダーを使った朝食向けオートミール",
+    "ingredients": [
+      "オートミール 50g",
+      "バナナ 1本",
+      "プロテインパウダー 30g",
+      "アーモンドミルク 200ml",
+      "ブルーベリー 50g"
+    ],
+    "instructions": [
+      "オートミールにアーモンドミルクを加えて煮る",
+      "バナナをスライスする",
+      "プロテインパウダーを混ぜる",
+      "ブルーベリーをトッピング"
+    ],
+    "mealType": "breakfast",
+    "nutrition": {
+      "calories": 450,
+      "protein": 35,
+      "fat": 8,
+      "carbohydrates": 65,
+      "fiber": 12,
+      "sodium": 150
+    },
+    "prepTime": 10,
+    "servings": 1,
+    "tags": [
+      "vegetarian",
+      "high-protein",
+      "quick"
+    ],
+    "createdAt": "2025-06-13T15:36:58.357Z",
+    "updatedAt": "2025-06-13T15:36:58.357Z"
+  },
+  {
+    "id": "menu_1749915091886_xkwsk6zv6",
+    "name": "ばなな",
+    "description": "バナナ",
+    "ingredients": [
+      "バナナ 1本"
+    ],
+    "instructions": [
+      "バナナの皮をむく"
+    ],
+    "mealType": "breakfast",
+    "nutrition": {
+      "calories": 84,
+      "protein": 1,
+      "fat": 0.2,
+      "carbohydrates": 20.3,
+      "fiber": 1,
+      "sodium": 0
+    },
+    "prepTime": 1,
+    "servings": 1,
+    "tags": [
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "raw"
+    ],
+    "createdAt": "2025-06-14T15:31:31.886Z",
+    "updatedAt": "2025-06-14T15:31:31.886Z"
+  }
+]

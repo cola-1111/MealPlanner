@@ -1,15 +1,18 @@
 import { MealDatabase } from './meal-database.js';
+import { MenuDatabase } from './menu-database.js';
 import { 
   MealSuggestion, 
   MealPlanOptions, 
   MealPlanRequest, 
   DailyMealPlan, 
   MealPlan,
-  NutritionInfo 
+  NutritionInfo,
+  RegisteredMenu,
+  MenuSuggestionOptions
 } from './types.js';
 
 export class MealPlanner {
-  constructor(private mealDatabase: MealDatabase) {}
+  constructor(private mealDatabase: MealDatabase, private menuDatabase?: MenuDatabase) {}
 
   suggestMeal(options: MealPlanOptions): MealSuggestion {
     const { mealType, targetCalories, excludeIngredients, vegetarian } = options;
@@ -321,5 +324,126 @@ export class MealPlanner {
       avgDailyFat: Math.round(totals.fat / totalDays),
       avgDailyCarbs: Math.round(totals.carbs / totalDays),
     };
+  }
+
+  suggestFromRegisteredMenus(options: MenuSuggestionOptions): RegisteredMenu[] {
+    if (!this.menuDatabase) {
+      throw new Error('Menu database not available');
+    }
+    return this.menuDatabase.suggestMenus(options);
+  }
+
+  convertMenuToMealSuggestion(menu: RegisteredMenu): MealSuggestion {
+    return {
+      name: menu.name,
+      description: menu.description,
+      ingredients: menu.ingredients,
+      instructions: menu.instructions,
+      totalNutrition: {
+        calories: menu.nutrition.calories,
+        protein: menu.nutrition.protein,
+        fat: menu.nutrition.fat,
+        carbohydrates: menu.nutrition.carbohydrates,
+        fiber: menu.nutrition.fiber,
+        sodium: menu.nutrition.sodium,
+      },
+      prepTime: menu.prepTime,
+      servings: menu.servings,
+      mealType: menu.mealType
+    };
+  }
+
+  createMealPlanFromMenus(request: MealPlanRequest & { useRegisteredMenus?: boolean }): MealPlan {
+    if (!request.useRegisteredMenus || !this.menuDatabase) {
+      return this.createMealPlan(request);
+    }
+
+    const { days, dailyCalories, vegetarian, excludeIngredients } = request;
+    const dailyPlans: DailyMealPlan[] = [];
+
+    for (let day = 1; day <= days; day++) {
+      const breakfastCalories = Math.round(dailyCalories * 0.25);
+      const lunchCalories = Math.round(dailyCalories * 0.35);
+      const dinnerCalories = Math.round(dailyCalories * 0.35);
+      const snackCalories = Math.round(dailyCalories * 0.05);
+
+      const usedMenuIds: string[] = [];
+
+      const breakfast = this.getMealFromMenusOrGenerate({
+        mealType: 'breakfast',
+        targetCalories: breakfastCalories,
+        excludeIngredients,
+        vegetarian
+      }, usedMenuIds);
+
+      const lunch = this.getMealFromMenusOrGenerate({
+        mealType: 'lunch',
+        targetCalories: lunchCalories,
+        excludeIngredients,
+        vegetarian
+      }, usedMenuIds);
+
+      const dinner = this.getMealFromMenusOrGenerate({
+        mealType: 'dinner',
+        targetCalories: dinnerCalories,
+        excludeIngredients,
+        vegetarian
+      }, usedMenuIds);
+
+      const snack = this.getMealFromMenusOrGenerate({
+        mealType: 'snack',
+        targetCalories: snackCalories,
+        excludeIngredients,
+        vegetarian
+      }, usedMenuIds);
+
+      const totalNutrition = this.calculateTotalNutrition([breakfast, lunch, dinner, snack]);
+
+      dailyPlans.push({
+        day,
+        breakfast,
+        lunch,
+        dinner,
+        snack,
+        totalNutrition
+      });
+    }
+
+    const summary = this.calculateMealPlanSummary(dailyPlans);
+
+    return {
+      days: dailyPlans,
+      summary
+    };
+  }
+
+  private getMealFromMenusOrGenerate(options: MealPlanOptions, usedMenuIds: string[]): MealSuggestion {
+    if (!this.menuDatabase) {
+      return this.suggestMeal(options);
+    }
+
+    const suggestions = this.menuDatabase.suggestMenus({
+      mealType: options.mealType as 'breakfast' | 'lunch' | 'dinner' | 'snack',
+      maxCalories: options.targetCalories ? Math.round(options.targetCalories * 1.2) : undefined,
+      vegetarian: options.vegetarian,
+      excludeMenuIds: usedMenuIds
+    });
+
+    const filteredSuggestions = suggestions.filter(menu => {
+      const hasExcludedIngredients = options.excludeIngredients.some(excluded =>
+        menu.ingredients.some(ingredient =>
+          ingredient.toLowerCase().includes(excluded.toLowerCase())
+        )
+      );
+      return !hasExcludedIngredients;
+    });
+
+    if (filteredSuggestions.length > 0) {
+      const selectedMenu = filteredSuggestions[Math.floor(Math.random() * filteredSuggestions.length)];
+      usedMenuIds.push(selectedMenu.id);
+      return this.convertMenuToMealSuggestion(selectedMenu);
+    }
+
+    return this.suggestMeal(options);
   }
 }
